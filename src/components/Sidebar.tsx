@@ -30,6 +30,8 @@ export function Sidebar() {
               <Fish className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">AquaHub</span>
+          </div>
+          <div className="flex-1 text-right">
             <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">
               Beta
             </span>

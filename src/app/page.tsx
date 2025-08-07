@@ -26,7 +26,7 @@ export default function HomePage() {
             <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
               Get Started
             </Button>
-            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600">
+            <Button variant="outline" size="lg" className="border-white text-black hover:bg-white hover:text-blue-600">
               Learn More
             </Button>
           </div>
