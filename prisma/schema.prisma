@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  name      String?
+  bio       String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  posts     Post[]
+  trades    Trade[]
+  fishTanks FishTank[]
+  accounts  Account[]
+  sessions  Session[]
+  
+  @@map("users")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  images    String[]
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@map("posts")
+}
+
+model FishTank {
+  id          String   @id @default(cuid())
+  name        String
+  size        Float    // in gallons
+  type        String   // freshwater, saltwater, etc.
+  temperature Float?
+  ph          Float?
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  owner User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  fish  Fish[]
+  
+  @@map("fish_tanks")
+}
+
+model Fish {
+  id          String   @id @default(cuid())
+  name        String
+  species     String
+  size        Float?
+  age         Int?
+  healthStatus String  @default("healthy")
+  notes       String?
+  tankId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tank  FishTank @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  trades TradeItem[]
+  
+  @@map("fish")
+}
+
+model Trade {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  status      TradeStatus @default(OPEN)
+  traderId    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  trader User        @relation(fields: [traderId], references: [id], onDelete: Cascade)
+  items  TradeItem[]
+  
+  @@map("trades")
+}
+
+model TradeItem {
+  id      String @id @default(cuid())
+  type    String // "fish", "equipment", "plant", etc.
+  fishId  String?
+  tradeId String
+
+  // Relations
+  fish  Fish? @relation(fields: [fishId], references: [id], onDelete: Cascade)
+  trade Trade @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  
+  @@map("trade_items")
+}
+
+enum TradeStatus {
+  OPEN
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
