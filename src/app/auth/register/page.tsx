@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { LoginForm } from '@/components/auth/LoginForm'
+import { RegisterForm } from '@/components/auth/RegisterForm'
 
 export const metadata: Metadata = {
   title: 'Register - AquaHub',
@@ -21,7 +21,7 @@ export default function RegisterPage() {
             </a>
           </p>
         </div>
-        <LoginForm />
+  <RegisterForm />
       </div>
     </div>
   )
